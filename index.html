@@ -1,1565 +1,780 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
-<meta name="theme-color" content="#0f172a">
-
-<meta name="description"
-content="Create social media ready quotes for Instagram, WhatsApp Status and YouTube Shorts.">
-
-<link rel="manifest" href="manifest.json">
-
-<title>Social Quote Maker</title>
-
-<style>
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
-
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
-
-html,body{
-margin:0;
-padding:0;
-background:#020617;
-color:#fff;
-font-family:Inter,Arial,sans-serif;
-}
-
-body{
-min-height:100vh;
-}
-
-button,input,textarea,select{
-font-family:inherit;
-}
-
-.app{
-min-height:100vh;
-display:flex;
-flex-direction:column;
-}
-
-/* HEADER */
-
-.header{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 15px;
-background:#111827;
-border-bottom:1px solid #273449;
-position:sticky;
-top:0;
-z-index:100;
-}
-
-.logo{
-font-size:18px;
-font-weight:800;
-}
-
-.install{
-display:none;
-width:auto;
-margin:0;
-padding:8px 12px;
-background:#2563eb;
-color:#fff;
-border:0;
-border-radius:9px;
-font-weight:700;
-}
-
-/* MAIN */
-
-.main{
-display:flex;
-min-height:calc(100vh - 60px);
-}
-
-/* CONTROLS */
-
-.controls{
-width:350px;
-padding:16px;
-background:#111827;
-overflow-y:auto;
-}
-
-.section{
-margin-bottom:18px;
-}
-
-.section-title{
-color:#94a3b8;
-font-size:11px;
-font-weight:800;
-text-transform:uppercase;
-letter-spacing:1px;
-margin-bottom:8px;
-}
-
-textarea,
-input,
-select{
-width:100%;
-background:#1e293b;
-border:1px solid #334155;
-color:#fff;
-border-radius:10px;
-padding:11px;
-outline:none;
-}
-
-textarea{
-height:105px;
-resize:none;
-}
-
-textarea:focus,
-input:focus,
-select:focus{
-border-color:#3b82f6;
-}
-
-.row{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:9px;
-}
-
-label{
-display:block;
-color:#cbd5e1;
-font-size:12px;
-margin-bottom:5px;
-}
-
-button{
-width:100%;
-border:0;
-border-radius:10px;
-padding:12px;
-color:white;
-font-weight:700;
-font-size:14px;
-cursor:pointer;
-}
-
-button:active{
-transform:scale(.98);
-}
-
-.primary{
-background:#2563eb;
-}
-
-.success{
-background:#16a34a;
-}
-
-.secondary{
-background:#334155;
-}
-
-/* FORMAT PRESETS */
-
-.presets{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px;
-}
-
-.preset{
-background:#1e293b;
-border:1px solid #334155;
-padding:10px 5px;
-}
-
-.preset small{
-display:block;
-color:#94a3b8;
-font-size:10px;
-margin-top:3px;
-}
-
-.preset.active{
-background:#1d4ed8;
-border-color:#60a5fa;
-}
-
-/* BACKGROUNDS */
-
-.backgrounds{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:7px;
-}
-
-.bg{
-height:43px;
-padding:0;
-border:2px solid transparent;
-}
-
-.bg.active{
-border-color:#fff;
-}
-
-/* COLORS */
-
-input[type="color"]{
-height:42px;
-padding:3px;
-}
-
-input[type="range"]{
-width:100%;
-accent-color:#3b82f6;
-}
-
-.range-value{
-float:right;
-color:#60a5fa;
-}
-
-/* PREVIEW */
-
-.preview{
-flex:1;
-min-width:0;
-display:flex;
-justify-content:center;
-align-items:center;
-padding:25px;
-background:#020617;
-overflow:auto;
-}
-
-/* CANVAS */
-
-.canvas{
-position:relative;
-width:360px;
-height:640px;
-flex-shrink:0;
-overflow:hidden;
-display:flex;
-justify-content:center;
-align-items:center;
-border-radius:6px;
-background:linear-gradient(135deg,#111827,#1d4ed8);
-box-shadow:0 25px 80px rgba(0,0,0,.6);
-}
-
-.canvas:before{
-content:"";
-position:absolute;
-width:480px;
-height:480px;
-border-radius:50%;
-background:rgba(255,255,255,.07);
-top:-230px;
-right:-170px;
-}
-
-.canvas:after{
-content:"";
-position:absolute;
-width:350px;
-height:350px;
-border-radius:50%;
-background:rgba(255,255,255,.05);
-bottom:-190px;
-left:-140px;
-}
-
-/* SAFE AREA */
-
-.safe-zone{
-position:absolute;
-left:8%;
-right:8%;
-top:16%;
-bottom:18%;
-z-index:3;
-pointer-events:none;
-border:1px dashed rgba(255,255,255,.18);
-border-radius:10px;
-}
-
-/* CONTENT */
-
-.content{
-width:78%;
-text-align:center;
-position:relative;
-z-index:5;
-}
-
-.quote-mark{
-font-family:Georgia,serif;
-font-size:55px;
-line-height:.5;
-opacity:.4;
-margin-bottom:20px;
-}
-
-.quote{
-font-family:"Noto Sans Devanagari",Arial,sans-serif;
-font-size:26px;
-font-weight:700;
-line-height:1.45;
-overflow-wrap:break-word;
-}
-
-.author{
-margin-top:24px;
-font-size:15px;
-opacity:.9;
-}
-
-.brand{
-position:absolute;
-z-index:6;
-bottom:35px;
-left:0;
-right:0;
-text-align:center;
-font-size:10px;
-letter-spacing:1.5px;
-opacity:.75;
-}
-
-/* SAFE SWITCH */
-
-.safe-control{
-display:flex;
-align-items:center;
-justify-content:space-between;
-background:#1e293b;
-border-radius:10px;
-padding:10px 12px;
-}
-
-.safe-control span{
-font-size:12px;
-}
-
-.switch{
-width:42px;
-height:23px;
-appearance:none;
-background:#475569;
-border-radius:20px;
-position:relative;
-cursor:pointer;
-padding:0;
-}
-
-.switch:before{
-content:"";
-position:absolute;
-width:17px;
-height:17px;
-border-radius:50%;
-background:#fff;
-top:3px;
-left:3px;
-transition:.2s;
-}
-
-.switch:checked{
-background:#2563eb;
-}
-
-.switch:checked:before{
-left:22px;
-}
-
-/* STATUS */
-
-.status{
-font-size:11px;
-color:#94a3b8;
-text-align:center;
-margin-top:8px;
-min-height:16px;
-}
-
-/* MOBILE */
-
-@media(max-width:800px){
-
-.main{
-flex-direction:column;
-}
-
-.preview{
-order:1;
-min-height:calc(100vh - 60px);
-padding:12px 5px;
-}
-
-.controls{
-order:2;
-width:100%;
-}
-
-.canvas{
-width:88vw;
-height:calc(88vw * 1.777777);
-max-width:360px;
-max-height:640px;
-}
-
-}
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Quote Creator & Social Sharer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Inter:wght@400;600;800&family=Playfair+Display:ital,wght@0,700;1,400&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #1e293b;
+      --panel-border: #334155;
+      --accent: #38bdf8;
+      --accent-hover: #0ea5e9;
+      --accent-green: #10b981;
+      --danger: #ef4444;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--panel);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--panel-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .main-container {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      flex: 1;
+      height: calc(100vh - 60px);
+    }
+
+    .controls-panel {
+      background: var(--panel);
+      border-right: 1px solid var(--panel-border);
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .control-group label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    input, select, textarea, button {
+      font-family: inherit;
+      background: #0b1120;
+      border: 1px solid var(--panel-border);
+      color: var(--text);
+      border-radius: 6px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 75px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border: none;
+      border-radius: 6px;
+      padding: 0.65rem 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary { background: var(--accent); color: #0b1120; }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-success { background: var(--accent-green); color: #0b1120; }
+    .btn-success:hover { opacity: 0.9; }
+    .btn-secondary { background: #334155; color: var(--text); }
+    .btn-secondary:hover { background: #475569; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { opacity: 0.9; }
+    .btn-social { font-size: 0.8rem; padding: 0.5rem; }
+
+    /* Saved Library Section */
+    .saved-list-wrapper {
+      background: #0b1120;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      max-height: 230px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .saved-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      border: 1px solid #334155;
+    }
+
+    .saved-info {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 220px;
+      font-size: 0.85rem;
+    }
+
+    .saved-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .saved-actions {
+      display: flex;
+      gap: 0.3rem;
+    }
+
+    .saved-actions button {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    /* Preview Canvas Area */
+    .preview-panel {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: auto;
+      background: radial-gradient(#1e293b 15%, transparent 16%) 0 0 / 20px 20px, #0f172a;
+    }
+
+    .canvas-wrapper {
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 90%;
+      max-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .social-share-box {
+      border-top: 1px solid var(--panel-border);
+      padding-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .social-icons-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .main-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .controls-panel {
+        border-right: none;
+        border-bottom: 1px solid var(--panel-border);
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="app">
-
-<header class="header">
-
-<div class="logo">
-✨ Social Quote Maker
-</div>
-
-<button
-id="installButton"
-class="install">
-Install App
-</button>
-
-</header>
-
-
-<main class="main">
-
-<!-- CONTROLS -->
-
-<section class="controls">
-
-<!-- QUOTE -->
-
-<div class="section">
-
-<div class="section-title">
-Quote
-</div>
-
-<textarea id="quoteInput">सफलता उन्हीं लोगों को मिलती है जो लगातार प्रयास करते रहते हैं।</textarea>
-
-</div>
-
-
-<!-- AUTHOR -->
-
-<div class="section">
-
-<div class="section-title">
-Author
-</div>
-
-<input
-id="authorInput"
-value="अज्ञात">
-
-</div>
-
-
-<!-- BRAND -->
-
-<div class="section">
-
-<div class="section-title">
-Brand
-</div>
-
-<input
-id="brandInput"
-value="QUOTE MAKER">
-
-</div>
-
-
-<!-- SOCIAL FORMAT -->
-
-<div class="section">
-
-<div class="section-title">
-Social Media Format
-</div>
-
-<div class="presets">
-
-<button
-class="preset active"
-data-width="1080"
-data-height="1920"
-data-name="Instagram-WhatsApp-Shorts">
-
-Instagram / WhatsApp / Shorts
-
-<small>
-1080 × 1920 • 9:16
-</small>
-
-</button>
-
-
-<button
-class="preset"
-data-width="1080"
-data-height="1350"
-data-name="Instagram-Portrait">
-
-Instagram Portrait
-
-<small>
-1080 × 1350 • 4:5
-</small>
-
-</button>
-
-
-<button
-class="preset"
-data-width="1080"
-data-height="1080"
-data-name="Instagram-Square">
-
-Instagram Square
-
-<small>
-1080 × 1080 • 1:1
-</small>
-
-</button>
-
-
-<button
-class="preset"
-data-width="1080"
-data-height="1440"
-data-name="Portrait">
-
-Portrait
-
-<small>
-1080 × 1440
-</small>
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- FONT SIZE -->
-
-<div class="section">
-
-<div class="section-title">
-Font Size
-</div>
-
-<label>
-
-Size
-
-<span
-id="fontValue"
-class="range-value">
-26
-</span>
-
-</label>
-
-<input
-id="fontSize"
-type="range"
-min="16"
-max="55"
-value="26">
-
-</div>
-
-
-<!-- COLORS -->
-
-<div class="section">
-
-<div class="section-title">
-Colors
-</div>
-
-<div class="row">
-
-<div>
-
-<label>
-Text
-</label>
-
-<input
-id="textColor"
-type="color"
-value="#ffffff">
-
-</div>
-
-
-<div>
-
-<label>
-Background
-</label>
-
-<input
-id="backgroundColor"
-type="color"
-value="#111827">
-
-</div>
-
-</div>
-
-</div>
-
-
-<!-- BACKGROUNDS -->
-
-<div class="section">
-
-<div class="section-title">
-Background Style
-</div>
-
-<div class="backgrounds">
-
-<button
-class="bg active"
-data-bg="linear-gradient(135deg,#111827,#1d4ed8)"
-style="background:linear-gradient(135deg,#111827,#1d4ed8)">
-</button>
-
-<button
-class="bg"
-data-bg="linear-gradient(135deg,#7c2d12,#db2777)"
-style="background:linear-gradient(135deg,#7c2d12,#db2777)">
-</button>
-
-<button
-class="bg"
-data-bg="linear-gradient(135deg,#064e3b,#15803d)"
-style="background:linear-gradient(135deg,#064e3b,#15803d)">
-</button>
-
-<button
-class="bg"
-data-bg="linear-gradient(135deg,#312e81,#9333ea)"
-style="background:linear-gradient(135deg,#312e81,#9333ea)">
-</button>
-
-<button
-class="bg"
-data-bg="#020617"
-style="background:#020617">
-</button>
-
-<button
-class="bg"
-data-bg="#fef3c7"
-style="background:#fef3c7">
-</button>
-
-<button
-class="bg"
-data-bg="linear-gradient(135deg,#450a0a,#dc2626)"
-style="background:linear-gradient(135deg,#450a0a,#dc2626)">
-</button>
-
-<button
-class="bg"
-data-bg="linear-gradient(135deg,#082f49,#0891b2)"
-style="background:linear-gradient(135deg,#082f49,#0891b2)">
-</button>
-
-</div>
-
-</div>
-
-
-<!-- SAFE AREA -->
-
-<div class="section">
-
-<div class="safe-control">
-
-<span>
-Show Social Safe Area
-</span>
-
-<input
-id="safeToggle"
-class="switch"
-type="checkbox"
-checked>
-
-</div>
-
-</div>
-
-
-<!-- ACTIONS -->
-
-<div class="section">
-
-<button
-class="secondary"
-onclick="randomQuote()">
-🎲 Random Quote
-</button>
-
-<br><br>
-
-<button
-class="success"
-onclick="downloadImage()">
-⬇️ Download Selected Format
-</button>
-
-<br><br>
-
-<button
-class="primary"
-onclick="shareImage()">
-📤 Share Selected Format
-</button>
-
-<div
-id="status"
-class="status">
-1080 × 1920 selected
-</div>
-
-</div>
-
-</section>
-
-
-<!-- PREVIEW -->
-
-<section class="preview">
-
-<div
-id="canvas"
-class="canvas">
-
-<div
-id="safeZone"
-class="safe-zone">
-</div>
-
-
-<div class="content">
-
-<div class="quote-mark">
-“
-</div>
-
-<div
-id="quote"
-class="quote">
-सफलता उन्हीं लोगों को मिलती है जो लगातार प्रयास करते रहते हैं।
-</div>
-
-<div
-id="author"
-class="author">
-— अज्ञात
-</div>
-
-</div>
-
-
-<div
-id="brand"
-class="brand">
-QUOTE MAKER
-</div>
-
-</div>
-
-</section>
-
-</main>
-
-</div>
-
-
-<script>
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const canvas =
-document.getElementById("canvas");
-
-const quoteInput =
-document.getElementById("quoteInput");
-
-const authorInput =
-document.getElementById("authorInput");
-
-const brandInput =
-document.getElementById("brandInput");
-
-const quote =
-document.getElementById("quote");
-
-const author =
-document.getElementById("author");
-
-const brand =
-document.getElementById("brand");
-
-const fontSize =
-document.getElementById("fontSize");
-
-const fontValue =
-document.getElementById("fontValue");
-
-const textColor =
-document.getElementById("textColor");
-
-const backgroundColor =
-document.getElementById("backgroundColor");
-
-const safeZone =
-document.getElementById("safeZone");
-
-const safeToggle =
-document.getElementById("safeToggle");
-
-const status =
-document.getElementById("status");
-
-
-/* =====================================================
-   SELECTED EXPORT FORMAT
-===================================================== */
-
-let exportWidth = 1080;
-
-let exportHeight = 1920;
-
-let exportName =
-"Instagram-WhatsApp-Shorts";
-
-
-/* =====================================================
-   UPDATE TEXT
-===================================================== */
-
-quoteInput.addEventListener(
-"input",
-() => {
-
-quote.textContent =
-quoteInput.value;
-
-});
-
-
-authorInput.addEventListener(
-"input",
-() => {
-
-author.textContent =
-authorInput.value
-? "— " + authorInput.value
-: "";
-
-});
-
-
-brandInput.addEventListener(
-"input",
-() => {
-
-brand.textContent =
-brandInput.value;
-
-});
-
-
-/* =====================================================
-   FONT SIZE
-===================================================== */
-
-fontSize.addEventListener(
-"input",
-() => {
-
-quote.style.fontSize =
-fontSize.value + "px";
-
-fontValue.textContent =
-fontSize.value;
-
-});
-
-
-/* =====================================================
-   COLORS
-===================================================== */
-
-textColor.addEventListener(
-"input",
-() => {
-
-quote.style.color =
-textColor.value;
-
-author.style.color =
-textColor.value;
-
-});
-
-
-backgroundColor.addEventListener(
-"input",
-() => {
-
-canvas.style.background =
-backgroundColor.value;
-
-});
-
-
-/* =====================================================
-   FORMAT SELECTOR
-===================================================== */
-
-document
-.querySelectorAll(".preset")
-.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-document
-.querySelectorAll(".preset")
-.forEach(x =>
-x.classList.remove("active")
-);
-
-button.classList.add("active");
-
-exportWidth =
-Number(button.dataset.width);
-
-exportHeight =
-Number(button.dataset.height);
-
-exportName =
-button.dataset.name;
-
-status.textContent =
-exportWidth +
-" × " +
-exportHeight +
-" selected";
-
-updatePreview();
-
-}
-);
-
-});
-
-
-/* =====================================================
-   PREVIEW RATIO
-===================================================== */
-
-function updatePreview(){
-
-const ratio =
-exportWidth /
-exportHeight;
-
-let width =
-Math.min(
-window.innerWidth * .88,
-360
-);
-
-if(window.innerWidth > 800){
-
-width = 360;
-
-}
-
-canvas.style.width =
-width + "px";
-
-canvas.style.height =
-(width / ratio) + "px";
-
-}
-
-
-window.addEventListener(
-"resize",
-updatePreview
-);
-
-
-/* =====================================================
-   BACKGROUNDS
-===================================================== */
-
-document
-.querySelectorAll(".bg")
-.forEach(button => {
-
-button.addEventListener(
-"click",
-() => {
-
-document
-.querySelectorAll(".bg")
-.forEach(x =>
-x.classList.remove("active")
-);
-
-button.classList.add("active");
-
-canvas.style.background =
-button.dataset.bg;
-
-}
-);
-
-});
-
-
-/* =====================================================
-   SAFE AREA
-===================================================== */
-
-safeToggle.addEventListener(
-"change",
-() => {
-
-safeZone.style.display =
-safeToggle.checked
-? "block"
-: "none";
-
-});
-
-
-/* =====================================================
-   RANDOM QUOTES
-===================================================== */
-
-const quotes = [
-
-[
-"सफलता उन्हीं लोगों को मिलती है जो लगातार प्रयास करते रहते हैं।",
-"अज्ञात"
-],
-
-[
-"हर दिन खुद को कल से बेहतर बनाने की कोशिश करें।",
-"अज्ञात"
-],
-
-[
-"मुश्किल रास्ते अक्सर खूबसूरत मंजिल तक ले जाते हैं।",
-"अज्ञात"
-],
-
-[
-"आज का छोटा प्रयास कल की बड़ी सफलता बन सकता है।",
-"अज्ञात"
-],
-
-[
-"समय की कद्र करने वाला व्यक्ति जीवन में बहुत आगे जाता है।",
-"अज्ञात"
-],
-
-[
-"अपने सपनों पर विश्वास रखिए और मेहनत करते रहिए।",
-"अज्ञात"
-],
-
-[
-"शुरुआत छोटी हो सकती है, लेकिन सोच हमेशा बड़ी रखिए।",
-"अज्ञात"
-],
-
-[
-"हार मान लेना असफलता है, कोशिश करते रहना सफलता की शुरुआत है।",
-"अज्ञात"
-]
-
-];
-
-
-function randomQuote(){
-
-const item =
-quotes[
-Math.floor(
-Math.random() *
-quotes.length
-)
-];
-
-quoteInput.value =
-item[0];
-
-authorInput.value =
-item[1];
-
-quote.textContent =
-item[0];
-
-author.textContent =
-"— " + item[1];
-
-}
-
-
-/* =====================================================
-   CREATE IMAGE
-===================================================== */
-
-async function createImage(){
-
-if(typeof html2canvas === "undefined"){
-
-throw new Error(
-"Image engine is still loading."
-);
-
-}
-
-const oldWidth =
-canvas.style.width;
-
-const oldHeight =
-canvas.style.height;
-
-const oldRadius =
-canvas.style.borderRadius;
-
-const oldSafe =
-safeZone.style.display;
-
-
-/* Hide guide */
-
-safeZone.style.display =
-"none";
-
-
-/* Exact selected size */
-
-canvas.style.width =
-exportWidth + "px";
-
-canvas.style.height =
-exportHeight + "px";
-
-canvas.style.borderRadius =
-"0";
-
-
-/*
-Important:
-The image is rendered at the
-currently selected social size.
-*/
-
-const image =
-await html2canvas(
-canvas,
-{
-width:exportWidth,
-height:exportHeight,
-scale:1,
-useCORS:true,
-backgroundColor:null,
-logging:false
-}
-);
-
-
-/* Restore preview */
-
-canvas.style.width =
-oldWidth;
-
-canvas.style.height =
-oldHeight;
-
-canvas.style.borderRadius =
-oldRadius;
-
-safeZone.style.display =
-oldSafe;
-
-
-/* Return canvas */
-
-return image;
-
-}
-
-
-/* =====================================================
-   DOWNLOAD SELECTED FORMAT
-===================================================== */
-
-async function downloadImage(){
-
-try{
-
-status.textContent =
-"Creating image...";
-
-const image =
-await createImage();
-
-const filename =
-"quote-" +
-exportName +
-"-" +
-exportWidth +
-"x" +
-exportHeight +
-".png";
-
-const link =
-document.createElement("a");
-
-link.download =
-filename;
-
-link.href =
-image.toDataURL(
-"image/png"
-);
-
-document.body.appendChild(link);
-
-link.click();
-
-link.remove();
-
-status.textContent =
-"Downloaded " +
-exportWidth +
-" × " +
-exportHeight;
-
-}catch(error){
-
-console.error(error);
-
-status.textContent =
-"Could not create image.";
-
-alert(
-"Unable to create image. Please try again."
-);
-
-}
-
-}
-
-
-/* =====================================================
-   SHARE SELECTED FORMAT
-===================================================== */
-
-async function shareImage(){
-
-try{
-
-status.textContent =
-"Preparing selected format...";
-
-
-/*
-The currently selected exportWidth
-and exportHeight are used here.
-*/
-
-const image =
-await createImage();
-
-
-const blob =
-await new Promise(
-resolve => {
-
-image.toBlob(
-resolve,
-"image/png",
-1.0
-);
-
-}
-);
-
-
-if(!blob){
-
-throw new Error(
-"Image creation failed."
-);
-
-}
-
-
-const filename =
-"quote-" +
-exportName +
-"-" +
-exportWidth +
-"x" +
-exportHeight +
-".png";
-
-
-const file =
-new File(
-[blob],
-filename,
-{
-type:"image/png"
-}
-);
-
-
-/*
-Android Chrome supports
-Web Share with files.
-*/
-
-if(
-navigator.share &&
-navigator.canShare &&
-navigator.canShare({
-files:[file]
-})
-){
-
-await navigator.share({
-
-files:[file],
-
-title:"Quote",
-
-text:
-exportWidth +
-" × " +
-exportHeight +
-" Quote"
-
-});
-
-status.textContent =
-"Image shared successfully.";
-
-}else{
-
-/*
-Fallback:
-download exactly the selected format.
-*/
-
-const url =
-URL.createObjectURL(blob);
-
-const link =
-document.createElement("a");
-
-link.href =
-url;
-
-link.download =
-filename;
-
-document.body.appendChild(link);
-
-link.click();
-
-link.remove();
-
-setTimeout(
-() => URL.revokeObjectURL(url),
-1000
-);
-
-status.textContent =
-"Selected format downloaded.";
-
-alert(
-"Your browser does not support direct image sharing. The selected image has been downloaded."
-);
-
-}
-
-}catch(error){
-
-console.error(
-"Share error:",
-error
-);
-
-status.textContent =
-"Sharing cancelled or failed.";
-
-}
-
-}
-
-
-/* =====================================================
-   PWA INSTALL
-===================================================== */
-
-let deferredPrompt = null;
-
-const installButton =
-document.getElementById(
-"installButton"
-);
-
-
-window.addEventListener(
-"beforeinstallprompt",
-event => {
-
-event.preventDefault();
-
-deferredPrompt =
-event;
-
-installButton.style.display =
-"block";
-
-}
-);
-
-
-installButton.addEventListener(
-"click",
-async () => {
-
-if(!deferredPrompt)
-return;
-
-deferredPrompt.prompt();
-
-await deferredPrompt.userChoice;
-
-deferredPrompt = null;
-
-installButton.style.display =
-"none";
-
-}
-);
-
-
-/* =====================================================
-   SERVICE WORKER
-===================================================== */
-
-if(
-"serviceWorker"
-in navigator
-){
-
-window.addEventListener(
-"load",
-() => {
-
-navigator
-.serviceWorker
-.register("./sw.js")
-.then(
-() =>
-console.log(
-"Quote Maker PWA ready"
-)
-)
-.catch(
-error =>
-console.log(
-"Service worker error:",
-error
-)
-);
-
-}
-);
-
-}
-
-
-/* =====================================================
-   HTML2CANVAS
-===================================================== */
-
-const script =
-document.createElement("script");
-
-script.src =
-"https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
-
-script.onload =
-() => {
-
-status.textContent =
-"1080 × 1920 selected";
-
-};
-
-document.head.appendChild(
-script
-);
-
-
-/* INITIAL */
-
-updatePreview();
-
-</script>
-
+  <header>
+    <h1>PRO QUOTE CREATOR STUDIO</h1>
+    <div style="font-size: 0.85rem; color: var(--text-muted);">Format • Render • Save Local • Share</div>
+  </header>
+
+  <div class="main-container">
+    <!-- Controls Sidebar -->
+    <div class="controls-panel">
+      <!-- Text Inputs -->
+      <div class="control-group">
+        <label>Quote Text</label>
+        <textarea id="quoteText" placeholder="Enter quote here...">“The only way to do great work is to love what you do.”</textarea>
+      </div>
+
+      <div class="control-group">
+        <label>Author / Source</label>
+        <input type="text" id="quoteAuthor" value="Steve Jobs" placeholder="Author name" />
+      </div>
+
+      <!-- Presets & Aspect Ratio -->
+      <div class="row">
+        <div class="control-group">
+          <label>Canvas Size</label>
+          <select id="aspectRatio">
+            <option value="1:1">Square 1:1 (Insta/Feed)</option>
+            <option value="9:16">Story / Shorts 9:16</option>
+            <option value="16:9">YouTube / Landscape 16:9</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Font Family</label>
+          <select id="fontFamily">
+            <option value="Playfair Display">Playfair (Classic)</option>
+            <option value="Cinzel">Cinzel (Luxury)</option>
+            <option value="Inter">Inter (Modern Clean)</option>
+            <option value="Great Vibes">Great Vibes (Script)</option>
+            <option value="Roboto Mono">Code / Mono</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Typography adjustments -->
+      <div class="row">
+        <div class="control-group">
+          <label>Font Size (<span id="fontSizeVal">50</span>px)</label>
+          <input type="range" id="fontSize" min="20" max="100" value="50" />
+        </div>
+        <div class="control-group">
+          <label>Text Align</label>
+          <select id="textAlign">
+            <option value="center">Center</option>
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Background Settings -->
+      <div class="control-group">
+        <label>Background Style</label>
+        <select id="bgMode">
+          <option value="gradient">Preset Gradient</option>
+          <option value="solid">Solid Color</option>
+          <option value="image">Custom Upload Image</option>
+        </select>
+      </div>
+
+      <div class="row" id="colorControls">
+        <div class="control-group">
+          <label>Text Color</label>
+          <input type="color" id="textColor" value="#ffffff" />
+        </div>
+        <div class="control-group" id="solidBgGroup" style="display:none;">
+          <label>Bg Color</label>
+          <input type="color" id="bgColor" value="#111827" />
+        </div>
+      </div>
+
+      <div class="control-group" id="gradientControls">
+        <label>Preset Gradients</label>
+        <select id="gradientPreset">
+          <option value="#0f172a,#1e1b4b">Deep Midnight</option>
+          <option value="#831843,#1e1b4b">Sunset Nebula</option>
+          <option value="#14532d,#022c22">Emerald Forest</option>
+          <option value="#1c1917,#0c0a09">Obsidian Dark</option>
+          <option value="#f59e0b,#ef4444">Warm Horizon</option>
+        </select>
+      </div>
+
+      <div class="control-group" id="imageUploadGroup" style="display:none;">
+        <label>Upload Background</label>
+        <input type="file" id="bgFileInput" accept="image/*" />
+        <label style="margin-top:0.3rem;">Overlay Darkness (<span id="overlayVal">0.4</span>)</label>
+        <input type="range" id="overlayOpacity" min="0" max="0.9" step="0.05" value="0.4" />
+      </div>
+
+      <!-- Enhancements -->
+      <div class="control-group">
+        <label>Decorations</label>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <label style="text-transform: none; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" id="showQuotes" checked /> Quotation Marks
+          </label>
+          <label style="text-transform: none; font-size: 0.9rem; cursor: pointer;">
+            <input type="checkbox" id="enableShadow" checked /> Text Shadow
+          </label>
+        </div>
+      </div>
+
+      <!-- Browser Storage Manager -->
+      <div class="control-group">
+        <label>Browser Local Storage</label>
+        <div class="button-group">
+          <button class="btn btn-success" id="btnSaveBrowser" style="flex:1;">💾 Save in Browser</button>
+          <button class="btn btn-secondary" id="btnClearAllBrowser" title="Clear all browser-saved quotes">🗑 Clear All</button>
+        </div>
+        <div class="saved-list-wrapper" id="savedListContainer">
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: auto;">No saved drafts in browser yet.</div>
+        </div>
+      </div>
+
+      <!-- Export & Download Buttons -->
+      <div class="control-group">
+        <label>Export Files</label>
+        <div class="button-group">
+          <button class="btn btn-primary" id="btnDownload" style="flex:1;">⬇ Download PNG</button>
+          <button class="btn btn-secondary" id="btnCopyImg" title="Copy to clipboard">📋 Copy</button>
+        </div>
+      </div>
+
+      <!-- Social & App Share -->
+      <div class="social-share-box">
+        <label>Direct App Sharing</label>
+        <button class="btn btn-primary" id="btnNativeShare" style="width: 100%;">
+          📤 Native Share (WhatsApp/Insta/Shorts)
+        </button>
+        <div class="social-icons-grid">
+          <button class="btn btn-secondary btn-social" id="btnShareYT">▶ YouTube Studio</button>
+          <button class="btn btn-secondary btn-social" id="btnShareX">𝕏 / Twitter</button>
+          <button class="btn btn-secondary btn-social" id="btnShareWA">WhatsApp</button>
+          <button class="btn btn-secondary btn-social" id="btnShareFB">Facebook</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Preview Area -->
+    <div class="preview-panel">
+      <div class="canvas-wrapper">
+        <canvas id="quoteCanvas" width="1080" height="1080"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('quoteCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const quoteTextInput = document.getElementById('quoteText');
+    const quoteAuthorInput = document.getElementById('quoteAuthor');
+    const aspectRatioSelect = document.getElementById('aspectRatio');
+    const fontFamilySelect = document.getElementById('fontFamily');
+    const fontSizeInput = document.getElementById('fontSize');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+    const textAlignSelect = document.getElementById('textAlign');
+    const textColorInput = document.getElementById('textColor');
+    const bgModeSelect = document.getElementById('bgMode');
+    const bgColorInput = document.getElementById('bgColor');
+    const solidBgGroup = document.getElementById('solidBgGroup');
+    const gradientControls = document.getElementById('gradientControls');
+    const gradientPreset = document.getElementById('gradientPreset');
+    const imageUploadGroup = document.getElementById('imageUploadGroup');
+    const bgFileInput = document.getElementById('bgFileInput');
+    const overlayOpacityInput = document.getElementById('overlayOpacity');
+    const overlayVal = document.getElementById('overlayVal');
+    const showQuotesInput = document.getElementById('showQuotes');
+    const enableShadowInput = document.getElementById('enableShadow');
+
+    const btnSaveBrowser = document.getElementById('btnSaveBrowser');
+    const btnClearAllBrowser = document.getElementById('btnClearAllBrowser');
+    const savedListContainer = document.getElementById('savedListContainer');
+
+    const btnDownload = document.getElementById('btnDownload');
+    const btnCopyImg = document.getElementById('btnCopyImg');
+    const btnNativeShare = document.getElementById('btnNativeShare');
+    const btnShareYT = document.getElementById('btnShareYT');
+    const btnShareX = document.getElementById('btnShareX');
+    const btnShareWA = document.getElementById('btnShareWA');
+    const btnShareFB = document.getElementById('btnShareFB');
+
+    let loadedCustomImage = null;
+    let customImageBase64 = null;
+
+    const SIZES = {
+      '1:1': { width: 1080, height: 1080 },
+      '9:16': { width: 1080, height: 1920 },
+      '16:9': { width: 1920, height: 1080 }
+    };
+
+    function renderQuote() {
+      const size = SIZES[aspectRatioSelect.value];
+      canvas.width = size.width;
+      canvas.height = size.height;
+
+      // Draw Background
+      if (bgModeSelect.value === 'solid') {
+        ctx.fillStyle = bgColorInput.value;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (bgModeSelect.value === 'gradient') {
+        const colors = gradientPreset.value.split(',');
+        const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        grad.addColorStop(0, colors[0]);
+        grad.addColorStop(1, colors[1]);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      } else if (bgModeSelect.value === 'image' && loadedCustomImage) {
+        const img = loadedCustomImage;
+        const hRatio = canvas.width / img.width;
+        const vRatio = canvas.height / img.height;
+        const ratio = Math.max(hRatio, vRatio);
+        const centerShiftX = (canvas.width - img.width * ratio) / 2;
+        const centerShiftY = (canvas.height - img.height * ratio) / 2;
+
+        ctx.drawImage(img, 0, 0, img.width, img.height,
+          centerShiftX, centerShiftY, img.width * ratio, img.height * ratio);
+
+        ctx.fillStyle = `rgba(0, 0, 0, ${overlayOpacityInput.value})`;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Typography
+      const textColor = textColorInput.value;
+      const font = fontFamilySelect.value;
+      const baseFontSize = parseInt(fontSizeInput.value, 10);
+      const scaleMultiplier = canvas.width / 1080;
+      const fontSize = baseFontSize * scaleMultiplier;
+
+      ctx.fillStyle = textColor;
+      ctx.textAlign = textAlignSelect.value;
+      ctx.textBaseline = 'middle';
+
+      if (enableShadowInput.checked) {
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 4;
+      } else {
+        ctx.shadowColor = 'transparent';
+      }
+
+      if (showQuotesInput.checked) {
+        ctx.save();
+        ctx.font = `italic ${fontSize * 3}px 'Playfair Display', serif`;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.textAlign = 'center';
+        ctx.fillText('“', canvas.width / 2, canvas.height / 2 - fontSize);
+        ctx.restore();
+      }
+
+      ctx.font = `600 ${fontSize}px '${font}'`;
+      const maxWidth = canvas.width * 0.8;
+      const lineHeight = fontSize * 1.35;
+      const words = quoteTextInput.value.split(' ');
+      let lines = [];
+      let currentLine = '';
+
+      for (let n = 0; n < words.length; n++) {
+        let testLine = currentLine + words[n] + ' ';
+        let metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          lines.push(currentLine.trim());
+          currentLine = words[n] + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine.trim());
+
+      const totalBlockHeight = lines.length * lineHeight;
+      let startY = (canvas.height - totalBlockHeight) / 2;
+
+      let targetX = canvas.width / 2;
+      if (textAlignSelect.value === 'left') targetX = canvas.width * 0.1;
+      if (textAlignSelect.value === 'right') targetX = canvas.width * 0.9;
+
+      lines.forEach((line, index) => {
+        ctx.fillText(line, targetX, startY + (index * lineHeight));
+      });
+
+      if (quoteAuthorInput.value.trim() !== '') {
+        const authorFontSize = fontSize * 0.5;
+        ctx.font = `italic 400 ${authorFontSize}px '${font}'`;
+        ctx.fillStyle = textColor;
+        ctx.globalAlpha = 0.85;
+        const authorY = startY + (lines.length * lineHeight) + (fontSize * 0.8);
+        ctx.fillText(`— ${quoteAuthorInput.value.trim()}`, targetX, authorY);
+        ctx.globalAlpha = 1.0;
+      }
+    }
+
+    // Input Listeners
+    [quoteTextInput, quoteAuthorInput, aspectRatioSelect, fontFamilySelect, 
+     textAlignSelect, textColorInput, bgColorInput, gradientPreset, 
+     showQuotesInput, enableShadowInput].forEach(element => {
+      element.addEventListener('input', renderQuote);
+    });
+
+    fontSizeInput.addEventListener('input', (e) => {
+      fontSizeVal.innerText = e.target.value;
+      renderQuote();
+    });
+
+    overlayOpacityInput.addEventListener('input', (e) => {
+      overlayVal.innerText = e.target.value;
+      renderQuote();
+    });
+
+    bgModeSelect.addEventListener('change', () => {
+      const mode = bgModeSelect.value;
+      solidBgGroup.style.display = mode === 'solid' ? 'block' : 'none';
+      gradientControls.style.display = mode === 'gradient' ? 'block' : 'none';
+      imageUploadGroup.style.display = mode === 'image' ? 'block' : 'none';
+      renderQuote();
+    });
+
+    bgFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          customImageBase64 = event.target.result;
+          const img = new Image();
+          img.onload = () => {
+            loadedCustomImage = img;
+            renderQuote();
+          };
+          img.src = customImageBase64;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // -------------------------------------------------------------
+    // LOCAL STORAGE / SAVE TO BROWSER DIRECTLY IMPLEMENTATION
+    // -------------------------------------------------------------
+    const STORAGE_KEY = 'quote_studio_saved_drafts';
+
+    function getSavedQuotes() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function saveQuotesToStorage(quotes) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(quotes));
+      } catch (e) {
+        alert('Storage limit reached! Delete some older quotes or avoid large background images.');
+      }
+    }
+
+    function renderSavedList() {
+      const items = getSavedQuotes();
+      savedListContainer.innerHTML = '';
+
+      if (items.length === 0) {
+        savedListContainer.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin: auto;">No saved drafts in browser yet.</div>';
+        return;
+      }
+
+      items.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'saved-item';
+        card.innerHTML = `
+          <div class="saved-info">
+            <div style="font-weight:600; color:#f8fafc;">${item.text.substring(0, 30)}${item.text.length > 30 ? '...' : ''}</div>
+            <div class="saved-meta">${item.author || 'Unknown'} • ${item.date}</div>
+          </div>
+          <div class="saved-actions">
+            <button class="btn btn-secondary" onclick="loadSavedQuote(${index})">Load</button>
+            <button class="btn btn-danger" onclick="deleteSavedQuote(${index})">✕</button>
+          </div>
+        `;
+        savedListContainer.appendChild(card);
+      });
+    }
+
+    btnSaveBrowser.addEventListener('click', () => {
+      const draft = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' }),
+        text: quoteTextInput.value,
+        author: quoteAuthorInput.value,
+        aspectRatio: aspectRatioSelect.value,
+        fontFamily: fontFamilySelect.value,
+        fontSize: fontSizeInput.value,
+        textAlign: textAlignSelect.value,
+        textColor: textColorInput.value,
+        bgMode: bgModeSelect.value,
+        bgColor: bgColorInput.value,
+        gradientPreset: gradientPreset.value,
+        overlayOpacity: overlayOpacityInput.value,
+        showQuotes: showQuotesInput.checked,
+        enableShadow: enableShadowInput.checked,
+        customImage: bgModeSelect.value === 'image' ? customImageBase64 : null
+      };
+
+      const quotes = getSavedQuotes();
+      quotes.unshift(draft); // insert latest first
+      saveQuotesToStorage(quotes);
+      renderSavedList();
+      alert('Draft saved to browser storage!');
+    });
+
+    window.loadSavedQuote = function(index) {
+      const quotes = getSavedQuotes();
+      const draft = quotes[index];
+      if (!draft) return;
+
+      quoteTextInput.value = draft.text;
+      quoteAuthorInput.value = draft.author;
+      aspectRatioSelect.value = draft.aspectRatio;
+      fontFamilySelect.value = draft.fontFamily;
+      fontSizeInput.value = draft.fontSize;
+      fontSizeVal.innerText = draft.fontSize;
+      textAlignSelect.value = draft.textAlign;
+      textColorInput.value = draft.textColor;
+      bgModeSelect.value = draft.bgMode;
+      bgColorInput.value = draft.bgColor || '#111827';
+      gradientPreset.value = draft.gradientPreset || '#0f172a,#1e1b4b';
+      overlayOpacityInput.value = draft.overlayOpacity || 0.4;
+      overlayVal.innerText = draft.overlayOpacity || 0.4;
+      showQuotesInput.checked = draft.showQuotes;
+      enableShadowInput.checked = draft.enableShadow;
+
+      // Update visible control rows
+      solidBgGroup.style.display = draft.bgMode === 'solid' ? 'block' : 'none';
+      gradientControls.style.display = draft.bgMode === 'gradient' ? 'block' : 'none';
+      imageUploadGroup.style.display = draft.bgMode === 'image' ? 'block' : 'none';
+
+      if (draft.bgMode === 'image' && draft.customImage) {
+        customImageBase64 = draft.customImage;
+        const img = new Image();
+        img.onload = () => {
+          loadedCustomImage = img;
+          renderQuote();
+        };
+        img.src = draft.customImage;
+      } else {
+        loadedCustomImage = null;
+        customImageBase64 = null;
+        renderQuote();
+      }
+    };
+
+    window.deleteSavedQuote = function(index) {
+      const quotes = getSavedQuotes();
+      quotes.splice(index, 1);
+      saveQuotesToStorage(quotes);
+      renderSavedList();
+    };
+
+    btnClearAllBrowser.addEventListener('click', () => {
+      if (confirm('Are you sure you want to delete all quotes saved in your browser?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        renderSavedList();
+      }
+    });
+
+    // -------------------------------------------------------------
+    // EXPORT & SHARE BUTTONS
+    // -------------------------------------------------------------
+    btnDownload.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `quote-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    btnCopyImg.addEventListener('click', async () => {
+      try {
+        canvas.toBlob(async (blob) => {
+          const item = new ClipboardItem({ 'image/png': blob });
+          await navigator.clipboard.write([item]);
+          alert('Image copied directly to clipboard! Paste it into WhatsApp, Discord, or Social Media.');
+        });
+      } catch (err) {
+        alert('Clipboard image copy is not supported in this browser version. Use Download instead.');
+      }
+    });
+
+    btnNativeShare.addEventListener('click', async () => {
+      if (!navigator.share) {
+        alert('Web Share API is not supported on this browser. Try on mobile Chrome/Safari, or use Download.');
+        return;
+      }
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'quote.png', { type: 'image/png' });
+        try {
+          await navigator.share({
+            title: 'Quote Poster',
+            text: `"${quoteTextInput.value}" — ${quoteAuthorInput.value}`,
+            files: [file]
+          });
+        } catch (error) {
+          if (error.name !== 'AbortError') console.error('Share failed:', error);
+        }
+      });
+    });
+
+    btnShareYT.addEventListener('click', () => {
+      window.open('https://studio.youtube.com/', '_blank');
+      alert('Tip: Download the image and upload it via "Create a Post" in YouTube Studio for community posts or Shorts!');
+    });
+
+    btnShareX.addEventListener('click', () => {
+      const text = encodeURIComponent(`"${quoteTextInput.value}" — ${quoteAuthorInput.value}`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+    });
+
+    btnShareWA.addEventListener('click', () => {
+      const text = encodeURIComponent(`"${quoteTextInput.value}" — ${quoteAuthorInput.value}`);
+      window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+    });
+
+    btnShareFB.addEventListener('click', () => {
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+    });
+
+    // Initialize
+    document.fonts.ready.then(() => {
+      renderQuote();
+      renderSavedList();
+    });
+  </script>
 </body>
 </html>
